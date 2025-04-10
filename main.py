@@ -7,12 +7,18 @@ class ExponentialMovingAverage:
         self.size = size
         self.prices = []
         oldEMA = 0;
+    
+    def calculateSMA(self):
+        
+        oldEMA = sum(self.prices) / len(self.prices) if self.prices else 0
 
     def update(self, price):
         self.prices.append(price)
         if (len(self.prices) > self.size):
             self.prices.pop(0)
-        return 2*(len(self.prices)+1)*price + (1-len(self.prices)+1) * oldEMA
+        
+    def calculateEMA(self, price):
+        return 2*(len(self.prices)+1)*price + (1-len(self.prices)+1) * self.oldEMA
         # return sum(self.prices) / len(self.prices) if self.prices else 0
 
 
@@ -35,11 +41,16 @@ class Trader:
             acceptable_price = 10  # Participant should calculate this value
             # print("Acceptable price : " + str(acceptable_price))
             # print("Buy Order depth : " + str(len(order_depth.buy_orders)) + ", Sell order depth : " + str(len(order_depth.sell_orders)))
+            shortMA = ExponentialMovingAverage(50)
+            longMA = ExponentialMovingAverage(400)
 
             
 
 
-
+            if (state.timestamp >= 50):
+                shortMA.update()
+            if (state.timestamp >= 400):
+                longMA.update()
 
 
             if len(order_depth.sell_orders) != 0:
